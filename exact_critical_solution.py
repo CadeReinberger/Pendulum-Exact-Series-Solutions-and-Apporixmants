@@ -6,5 +6,5 @@ def get_exact_critical_solution(conds):
     '''
     w0 = np.sqrt(conds.g/conds.l)
     def theta(t):
-        return 2*np.arcsin(np.tanh(w0*t))
+        return 2*np.sign(conds.omega0)*np.arcsin(np.tanh(w0*t))
     return theta

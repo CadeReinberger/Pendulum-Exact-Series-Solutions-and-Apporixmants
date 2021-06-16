@@ -49,8 +49,9 @@ def get_expansion_conditions(conds):
     '''
     Returns the 0-th and first derivative at the best point of expansion
     '''
-    if get_behavior(conds) == 'critical':
-        return (0, get_bottom_velocity(conds))
+    behavior = get_behavior(conds)
+    if behavior == 'critical':
+        return (0, np.sign(conds.omega0) * get_bottom_velocity(conds))  
     return (get_top_angle(conds), -get_top_velocity(conds))
 
 def get_T_star(conds):

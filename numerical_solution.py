@@ -13,7 +13,19 @@ def numerical_solve(conds, TT = None, dt = None):
     times = np.arange(0, TT, dt)
     kappa = conds.g / conds.l
     deriv = lambda x, t : (x[1], -kappa * np.sin(x[0]))
-    init_cond = conservation_of_energy.get_expansion_conditions(conds)
+    init_cond = (conds.theta0, conds.omega0)
     ps = odeint(deriv, init_cond, times)
     thetas = ps[:,0]
+    #do some mapping to make sure that we don't repeat cycles
+    def wrap(theta):
+        if np.abs(theta) <= np.pi:
+            return theta
+        elif theta < -np.pi:
+            return ((np.pi + theta) % (2*np.pi)) - np.pi
+        if theta > np.pi:
+            return ((theta + np.pi) % (2*np.pi)) - np.pi
+        else:
+            return 0
+    wrap_thetas = np.vectorize(wrap)
+    thetas = wrap_thetas(thetas)
     return times, thetas

@@ -1,7 +1,7 @@
 import numpy as np
 import conservation_of_energy
 
-def get_series(conds, N):
+def get_series(conds, N, raw_conds = False):
     '''
     Returns the coefficients of the Taylors series solution to the pendulum 
     problem
@@ -11,7 +11,10 @@ def get_series(conds, N):
     C = np.zeros(N + 1) 
     S = np.zeros(N + 1)
     #set the initial conditions 
-    (a[0], a[1]) = conservation_of_energy.get_expansion_conditions(conds)
+    if raw_conds:
+        a[0], a[1] = conds.theta0, conds.omega0
+    else:
+        (a[0], a[1]) = conservation_of_energy.get_expansion_conditions(conds)
     kappa = conds.g / conds.l;
     C[0] = np.cos(a[0]) 
     S[0] = np.sin(a[0]);
@@ -34,3 +37,12 @@ def get_series_function(conds, N):
             return coeffs[0]
         return sum(a*(t**i) for (i, a) in enumerate(coeffs))
     return theta
+
+def get_series_deriv_funct(conds, N):
+    coeffs = get_series(conds, N)
+    def omega(t):
+        if t == 0:
+            return coeffs[1]
+        return sum((k+1)*coeffs[k+1]*(t**k) for k in range(len(coeffs)-1))
+    return omega
+    
